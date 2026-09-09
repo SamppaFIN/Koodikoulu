@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koodikoulu · Oppitunti 1 — Intro</title>
+<style>
+  :root {
+    --c-bg:        oklch(0.12 0.02 260);
+    --c-surface:   oklch(0.17 0.02 260);
+    --c-surface-2: oklch(0.22 0.02 260);
+    --c-border:    oklch(0.34 0.02 260);
+    --c-text:      oklch(0.92 0.01 260);
+    --c-muted:     oklch(0.70 0.02 260);
+    --c-accent:    oklch(0.68 0.15 240);
+    --c-success:   oklch(0.68 0.18 145);
+    --c-danger:    oklch(0.65 0.20 25);
+    --c-warn:      oklch(0.80 0.14 85);
+    --touch:       44px;
+    --radius:      14px;
+    --maxw:        1000px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --c-bg:        oklch(0.97 0.006 260);
+    --c-surface:   oklch(1 0 0);
+    --c-surface-2: oklch(0.945 0.008 260);
+    --c-border:    oklch(0.84 0.01 260);
+    --c-text:      oklch(0.22 0.02 260);
+    --c-muted:     oklch(0.46 0.02 260);
+    --c-accent:    oklch(0.52 0.16 240);
+    --c-success:   oklch(0.52 0.16 145);
+    --c-danger:    oklch(0.53 0.20 25);
+    --c-warn:      oklch(0.62 0.13 85);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]):not([data-theme="light"]) {
+      --c-bg:        oklch(0.97 0.006 260);
+      --c-surface:   oklch(1 0 0);
+      --c-surface-2: oklch(0.945 0.008 260);
+      --c-border:    oklch(0.84 0.01 260);
+      --c-text:      oklch(0.22 0.02 260);
+      --c-muted:     oklch(0.46 0.02 260);
+      --c-accent:    oklch(0.52 0.16 240);
+      --c-success:   oklch(0.52 0.16 145);
+      --c-danger:    oklch(0.53 0.20 25);
+      --c-warn:      oklch(0.62 0.13 85);
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: clamp(0.98rem, 0.92rem + 0.35vw, 1.1rem);
+    line-height: 1.65;
+    -webkit-text-size-adjust: 100%;
+  }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+
+  a { color: var(--c-accent); }
+  :focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; border-radius: 4px; }
+
+  .glass-header {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem;
+    padding: 0.7rem clamp(0.9rem, 3vw, 1.5rem);
+    background: color-mix(in oklab, var(--c-bg) 82%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--c-border);
+  }
+  .glass-header h1 { font-size: 1rem; margin: 0; font-weight: 650; letter-spacing: 0.01em; }
+  .glass-header h1 .dim { color: var(--c-muted); font-weight: 500; }
+  .steps { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-left: auto; }
+  .steps a {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; text-decoration: none; color: var(--c-muted);
+    border: 1px solid var(--c-border); border-radius: 999px;
+    padding: 0.28rem 0.7rem; min-height: 32px;
+  }
+  .steps a .dot {
+    width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--c-surface-2); border: 1px solid var(--c-border);
+  }
+  .steps a[data-done="1"] { color: var(--c-text); border-color: var(--c-success); }
+  .steps a[data-done="1"] .dot { background: var(--c-success); border-color: var(--c-success); }
+
+  .theme-btn {
+    min-height: 32px; padding: 0.28rem 0.7rem;
+    background: var(--c-surface); color: var(--c-text);
+    border: 1px solid var(--c-border); border-radius: 999px;
+    font-size: 0.82rem; cursor: pointer;
+  }
+
+  main { max-width: var(--maxw); margin: 0 auto; padding: clamp(1.2rem, 4vw, 2.4rem) clamp(0.9rem, 3vw, 1.5rem) 4rem; }
+  section { scroll-margin-top: 72px; margin-top: 3.2rem; }
+  section:first-of-type { margin-top: 1.5rem; }
+
+  .kicker { color: var(--c-accent); font-weight: 650; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 0.3rem; }
+  h2 { font-size: clamp(1.35rem, 1.1rem + 1.4vw, 1.9rem); margin: 0 0 0.6rem; line-height: 1.25; }
+  .lead { color: var(--c-muted); max-width: 62ch; margin: 0 0 1.6rem; }
+
+  .hero {
+    border: 1px solid var(--c-border); border-radius: var(--radius);
+    background: linear-gradient(160deg, color-mix(in oklab, var(--c-accent) 14%, var(--c-surface)), var(--c-surface));
+    padding: clamp(1.3rem, 4vw, 2.2rem);
+  }
+  .hero h2 { margin-top: 0.2rem; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+  .card {
+    position: relative; overflow: hidden;
+    background: var(--c-surface); border: 1px solid var(--c-border);
+    border-radius: var(--radius); padding: 1.1rem 1.15rem 1.2rem;
+  }
+  .card .num {
+    position: absolute; top: -0.6rem; right: 0.4rem;
+    font-size: 3.6rem; font-weight: 800; line-height: 1;
+    color: color-mix(in oklab, var(--c-accent) 22%, transparent);
+    pointer-events: none;
+  }
+  .card h3 { margin: 0 0 0.4rem; font-size: 1.05rem; display: flex; gap: 0.5rem; align-items: baseline; }
+  .card p { margin: 0.4rem 0 0; color: var(--c-muted); font-size: 0.95rem; }
+  .card ul { margin: 0.5rem 0 0; padding-left: 1.1rem; color: var(--c-muted); font-size: 0.95rem; }
+  .card ul li { margin: 0.25rem 0; }
+  .card b, .card strong { color: var(--c-text); }
+
+  figure.diagram { margin: 1.6rem 0 0; }
+  figure.diagram .scroll { overflow-x: auto; border: 1px solid var(--c-border); border-radius: var(--radius); background: var(--c-surface); padding: 1rem; }
+  figure.diagram svg { display: block; width: 100%; min-width: 480px; height: auto; }
+  figure.diagram figcaption { color: var(--c-muted); font-size: 0.85rem; margin-top: 0.5rem; text-align: center; }
+
+  .panel { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); padding: clamp(1.1rem, 3.5vw, 1.8rem); }
+
+  fieldset { border: 1px solid var(--c-border); border-radius: 10px; padding: 1rem 1.1rem; margin: 0 0 1.1rem; }
+  legend { padding: 0 0.4rem; font-weight: 600; }
+  .opt { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0.5rem; border-radius: 8px; min-height: var(--touch); cursor: pointer; }
+  .opt:hover { background: var(--c-surface-2); }
+  .opt input { margin-top: 0.28rem; width: 1.05rem; height: 1.05rem; accent-color: var(--c-accent); flex: none; }
+  .opt span { flex: 1; }
+
+  textarea, input[type="text"] {
+    width: 100%; background: var(--c-bg); color: var(--c-text);
+    border: 1px solid var(--c-border); border-radius: 8px; padding: 0.6rem 0.7rem;
+    font: inherit; resize: vertical;
+  }
+  label.field { display: block; margin: 0 0 1rem; }
+  label.field > span { display: block; margin-bottom: 0.35rem; font-weight: 600; }
+  select {
+    width: 100%; background: var(--c-bg); color: var(--c-text);
+    border: 1px solid var(--c-border); border-radius: 8px; padding: 0.6rem 0.7rem;
+    font: inherit; min-height: var(--touch);
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    min-height: var(--touch); padding: 0.6rem 1.2rem;
+    background: var(--c-accent); color: oklch(0.15 0.02 260);
+    border: 1px solid transparent; border-radius: 10px;
+    font: inherit; font-weight: 650; cursor: pointer;
+  }
+  .btn.secondary { background: var(--c-surface-2); color: var(--c-text); border-color: var(--c-border); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.4rem; }
+
+  .note { font-size: 0.9rem; color: var(--c-muted); }
+  .result { margin-top: 1rem; padding: 0.9rem 1rem; border-radius: 10px; border: 1px solid var(--c-border); background: var(--c-surface-2); }
+  .result.ok { border-color: var(--c-success); }
+  .result strong { color: var(--c-text); }
+
+  .q { margin: 0 0 1.2rem; }
+  .q pre {
+    background: var(--c-bg); border: 1px solid var(--c-border); border-radius: 8px;
+    padding: 0.8rem 0.9rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; line-height: 1.5;
+  }
+  .q .qtext { font-weight: 600; margin: 0.3rem 0 0.5rem; }
+  .q .verdict { font-size: 0.9rem; margin-top: 0.4rem; }
+  .q .verdict.ok { color: var(--c-success); }
+  .q .verdict.no { color: var(--c-danger); }
+
+  #ticketOut { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; line-height: 1.5; min-height: 320px; }
+  .filename { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.9rem; color: var(--c-text); background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 6px; padding: 0.15rem 0.45rem; }
+
+  footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.5rem 3rem; color: var(--c-muted); font-size: 0.85rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="glass-header">
+  <h1>🎓 Koodikoulu <span class="dim">· Oppitunti 1</span></h1>
+  <nav class="steps" aria-label="Edistyminen">
+    <a href="#intro"  data-step="intro"><span class="dot"></span>1 · Intro</a>
+    <a href="#kysely" data-step="kysely"><span class="dot"></span>2 · Kysely</a>
+    <a href="#koe"    data-step="koe"><span class="dot"></span>3 · Koe</a>
+    <a href="#yhteenveto" data-step="form"><span class="dot"></span>4 · Yhteenveto</a>
+  </nav>
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Vaihda vaalea/tumma teema">🌓 Teema</button>
+</header>
+
+<main>
+
+  <!-- ============ OSA 1: INTRO ============ -->
+  <section id="intro">
+    <div class="hero">
+      <p class="kicker">Osa 1 · Iso kuva</p>
+      <h2>Mitä tietokoneet ja ohjelmistotuotanto oikeastaan ovat?</h2>
+      <p class="lead">
+        Ennen kuin kirjoitat ensimmäistä koodiriviä, katsotaan mistä tässä on kyse.
+        Kymmenen korttia, ei kiirettä. Lopuksi pieni koe ja kysely, joiden pohjalta
+        rakennetaan juuri sinulle sopiva seuraava oppitunti.
+      </p>
+    </div>
+
+    <div class="cards">
+      <article class="card"><span class="num">1</span>
+        <h3><span aria-hidden="true">💻</span> Tietokone tekee vain sen mitä käsket</h3>
+        <p>Tietokone ei keksi mitään itse. Se osaa yhden tempun todella hyvin: seurata ohjeita —
+        nopeasti ja tekemättä virheitä. Kaikki fiksut jutut tulevat ihmisen kirjoittamista ohjeista.</p>
+      </article>
+
+      <article class="card"><span class="num">2</span>
+        <h3><span aria-hidden="true">🔢</span> Sisällä on vain numeroita</h3>
+        <p>Koneen sisällä ei ole kirjaimia eikä kuvia — vain valtava määrä numeroita.
+        Teksti, väri, musiikki ja video ovat koneelle numeroita. Koodilla me käskemme
+        konetta pyörittelemään niitä puolestamme.</p>
+      </article>
+
+      <article class="card"><span class="num">3</span>
+        <h3><span aria-hidden="true">🧠</span> Kolme tärkeää osaa</h3>
+        <ul>
+          <li><b>Prosessori</b> on ahkera laskija: yksi asia kerrallaan, mutta miljoonia kertoja sekunnissa.</li>
+          <li><b>Muisti</b> on työpöytä: siinä on se mitä juuri nyt tehdään. Virta pois → pöytä tyhjenee.</li>
+          <li><b>Levy</b> on reppu: sinne tavarat jäävät talteen, vaikka kone sammuu.</li>
+        </ul>
+      </article>
+
+      <article class="card"><span class="num">4</span>
+        <h3><span aria-hidden="true">📜</span> Ohjelma on kuin resepti</h3>
+        <p>Ohjelma on lista ohjeita järjestyksessä: tee ensin tämä, sitten tämä.
+        Kone tekee juuri niin kuin lukee — ei niin kuin sinä ajattelit.
+        Iso osa koodaamista on opetella sanomaan asiat tosi tarkasti.</p>
+      </article>
+
+      <article class="card"><span class="num">5</span>
+        <h3><span aria-hidden="true">🗣️</span> Koodikieli on tulkki välissä</h3>
+        <p>Kone tajuaa vain numeroita, ihminen ei jaksa kirjoittaa numeroita.
+        Koodikieli on siltä väliltä: sanoja ja merkkejä, joita ihminen osaa lukea
+        ja joista kone saa selvää. Meidän kieli on <b>JavaScript</b> — se pyörittää melkein kaikkia nettisivuja.</p>
+      </article>
+
+      <article class="card"><span class="num">6</span>
+        <h3><span aria-hidden="true">▶️</span> Miten koodi lähtee käyntiin</h3>
+        <p>Kirjoitat ohjeet tekstinä. Toinen ohjelma lukee tekstisi ja kääntää sen koneen kielelle.
+        Vasta sitten kone tekee mitä pyysit. JavaScriptillä tämä tapahtuu selaimessa
+        heti kun painat <b>Aja</b>.</p>
+      </article>
+    </div>
+
+    <figure class="diagram">
+      <div class="scroll">
+        <svg viewBox="0 0 820 150" role="img" aria-label="Ajoketju: sinä kirjoitat tekstiä, kääntäjä lukee sen, kone suorittaa, tulos näkyy ruudulla">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="var(--c-accent)"/>
+            </marker>
+          </defs>
+          <g font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">
+            <g>
+              <rect x="8"   y="40" width="170" height="70" rx="10" fill="var(--c-surface-2)" stroke="var(--c-accent)"/>
+              <text x="93" y="70" fill="var(--c-text)">Sinä kirjoitat</text>
+              <text x="93" y="90" fill="var(--c-muted)">tekstiä (koodi)</text>
+            </g>
+            <g>
+              <rect x="222" y="40" width="170" height="70" rx="10" fill="var(--c-surface-2)" stroke="var(--c-border)"/>
+              <text x="307" y="70" fill="var(--c-text)">Kääntäjä lukee</text>
+              <text x="307" y="90" fill="var(--c-muted)">→ koneen kieli</text>
+            </g>
+            <g>
+              <rect x="436" y="40" width="170" height="70" rx="10" fill="var(--c-surface-2)" stroke="var(--c-border)"/>
+              <text x="521" y="70" fill="var(--c-text)">Prosessori</text>
+              <text x="521" y="90" fill="var(--c-muted)">suorittaa</text>
+            </g>
+            <g>
+              <rect x="650" y="40" width="162" height="70" rx="10" fill="var(--c-surface-2)" stroke="var(--c-success)"/>
+              <text x="731" y="70" fill="var(--c-text)">Tulos</text>
+              <text x="731" y="90" fill="var(--c-muted)">ruudulla</text>
+            </g>
+            <line x1="180" y1="75" x2="220" y2="75" stroke="var(--c-accent)" stroke-width="2" marker-end="url(#ah)"/>
+            <line x1="394" y1="75" x2="434" y2="75" stroke="var(--c-accent)" stroke-width="2" marker-end="url(#ah)"/>
+            <line x1="608" y1="75" x2="648" y2="75" stroke="var(--c-accent)" stroke-width="2" marker-end="url(#ah)"/>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Ajoketju — samasta tekstistä ruudulla näkyvä tulos.</figcaption>
+    </figure>
+
+    <div class="cards">
+      <article class="card"><span class="num">7</span>
+        <h3><span aria-hidden="true">🏗️</span> "Ohjelmistotuotanto" on paljon muutakin kuin kirjoittamista</h3>
+        <p>Koodin kirjoittaminen on ehkä kolmasosa hommasta. Loput: mieti mikä ongelma ratkaistaan,
+        suunnittele, kirjoita koodi, <b>kokeile että toimii</b>, julkaise muille, ja korjaile kun
+        ihmiset käyttävät sitä. Sitten alusta taas. Se on kehä, ei suora viiva.</p>
+      </article>
+
+      <article class="card"><span class="num">8</span>
+        <h3><span aria-hidden="true">🐛</span> Virheet kuuluvat asiaan</h3>
+        <p>"Bugi" tarkoittaa, että ohjelma tekee jotain väärin — yleensä koska ohje oli epätarkka.
+        Kone ei ymmärrä väärin, se tottelee kirjaimellisesti. Siksi tehdään <b>testejä</b>:
+        pikkutarkistuksia, jotka huutavat heti jos jokin menee rikki.</p>
+      </article>
+
+      <article class="card"><span class="num">9</span>
+        <h3><span aria-hidden="true">💾</span> Koodille otetaan tallennuspisteitä</h3>
+        <p>Työkalu nimeltä <b>git</b> ottaa koodista tallennuksia, vähän kuin pelin save-ruudut.
+        Voit palata eiliseen versioon tai tehdä töitä kaverin kanssa sotkematta toistenne tekemisiä.</p>
+      </article>
+
+      <article class="card"><span class="num">10</span>
+        <h3><span aria-hidden="true">🔁</span> Yksi pala kerrallaan</h3>
+        <p>Kukaan ei tee koko ohjelmaa yhdellä kertaa. Tehdään pienin pala joka toimii, kokeillaan,
+        korjataan, lisätään seuraava pala. Tämä koulu menee samoin: yksi aihe, yksi tehtävä,
+        yksi testi vihreäksi — sitten seuraava.</p>
+      </article>
+
+      <article class="card"><span class="num">11</span>
+        <h3><span aria-hidden="true">📖</span> Sanat jotka kannattaa muistaa</h3>
+        <ul>
+          <li><b>Lähdekoodi</b> — teksti jonka kirjoitat; ohjeet koneelle.</li>
+          <li><b>Muuttuja</b> — nimetty laatikko jossa säilytetään yksi arvo.</li>
+          <li><b>Funktio</b> — nimetty pala koodia, joka tekee yhden hommat ja jonka voi kutsua uudestaan.</li>
+          <li><b>Testi</b> — automaattinen tarkistus: "toimiiko tämä yhä?"</li>
+          <li><b>Bugi</b> — ohjelma tekee muuta kuin piti.</li>
+          <li><b>git</b> — työkalu koodin tallennuspisteille ja tiimityölle.</li>
+        </ul>
+      </article>
+    </div>
+
+    <figure class="diagram">
+      <div class="scroll">
+        <svg viewBox="0 0 820 150" role="img" aria-label="Ohjelmistotuotannon kehä: ongelma, suunnittelu, koodi, kokeilu, julkaisu, ylläpito, ja taas alusta">
+          <g font-family="system-ui, sans-serif" font-size="13" text-anchor="middle">
+            <g fill="var(--c-text)">
+              <rect x="8"   y="30" width="120" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-accent)"/><text x="68"  y="58">Ongelma</text>
+              <rect x="142" y="30" width="120" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="202" y="58">Suunnittelu</text>
+              <rect x="276" y="30" width="120" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="336" y="58">Koodi</text>
+              <rect x="410" y="30" width="120" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="470" y="58">Kokeilu</text>
+              <rect x="544" y="30" width="120" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="604" y="58">Julkaisu</text>
+              <rect x="678" y="30" width="134" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="745" y="58">Ylläpito</text>
+            </g>
+            <g stroke="var(--c-accent)" stroke-width="2" marker-end="url(#ah)" fill="none">
+              <line x1="128" y1="53" x2="140" y2="53"/>
+              <line x1="262" y1="53" x2="274" y2="53"/>
+              <line x1="396" y1="53" x2="408" y2="53"/>
+              <line x1="530" y1="53" x2="542" y2="53"/>
+              <line x1="664" y1="53" x2="676" y2="53"/>
+              <path d="M745 76 L745 120 L68 120 L68 78"/>
+            </g>
+            <text x="406" y="138" fill="var(--c-muted)" font-size="12">…ja taas alusta</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Ohjelmistotuotannon kehä — työ ei lopu julkaisuun, se palaa alkuun.</figcaption>
+    </figure>
+
+    <figure class="diagram">
+      <div class="scroll">
+        <svg viewBox="0 0 620 250" role="img" aria-label="Abstraktiokerrokset ylhäältä alas: sinun koodisi, selain tai Node, käyttöjärjestelmä, laitteisto">
+          <g font-family="system-ui, sans-serif" font-size="14">
+            <g text-anchor="middle" fill="var(--c-text)">
+              <rect x="90" y="12"  width="440" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-accent)"/><text x="310" y="40">Sinun koodisi (JavaScript)</text>
+              <rect x="90" y="66"  width="440" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="310" y="94">Selain tai Node — suoritusympäristö</text>
+              <rect x="90" y="120" width="440" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="310" y="148">Käyttöjärjestelmä</text>
+              <rect x="90" y="174" width="440" height="46" rx="9" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="310" y="202">Laitteisto: prosessori, muisti, levy</text>
+            </g>
+            <g stroke="var(--c-muted)" stroke-width="2" fill="none" marker-end="url(#ah)">
+              <line x1="40" y1="20" x2="40" y2="210"/>
+            </g>
+            <text x="34" y="16" fill="var(--c-muted)" font-size="12" text-anchor="middle">helppo ihmiselle</text>
+            <text x="34" y="234" fill="var(--c-muted)" font-size="12" text-anchor="middle">lähellä konetta</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Kerrokset — sinä kirjoitat ylimmällä tasolla, alemmat hoitavat loput.</figcaption>
+    </figure>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <button class="btn" id="introDone" type="button">Selvä — jatketaan ▼</button>
+    </div>
+  </section>
+
+  <!-- ============ OSA 2: LÄHTÖKYSELY ============ -->
+  <section id="kysely">
+    <p class="kicker">Osa 2 · Lähtökysely</p>
+    <h2>Mistä jatketaan?</h2>
+    <p class="lead">Neljä kysymystä. Näistä tiedän, mihin suuntaan sinun polkuasi kannattaa lähteä rakentamaan.</p>
+
+    <form class="panel" id="kyselyForm">
+      <fieldset>
+        <legend>1. Oletko koodannut ennen?</legend>
+        <label class="opt"><input type="radio" name="kokemus" value="En koskaan" required><span>En koskaan</span></label>
+        <label class="opt"><input type="radio" name="kokemus" value="Vähän kokeillut"><span>Vähän kokeillut (esim. Scratch, tunti pari jotain)</span></label>
+        <label class="opt"><input type="radio" name="kokemus" value="Jonkin verran"><span>Jonkin verran — muistan muuttujat ja ehdot</span></label>
+        <label class="opt"><input type="radio" name="kokemus" value="Perusteet hallussa"><span>Perusteet hallussa, haluan seuraavan tason</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Mitä haluaisit pystyä tekemään? (valitse 1–2)</legend>
+        <label class="opt"><input type="checkbox" name="kiinnostus" value="Verkkosivut"><span>Verkkosivuja ja käyttöliittymiä</span></label>
+        <label class="opt"><input type="checkbox" name="kiinnostus" value="Pelit"><span>Pieniä pelejä</span></label>
+        <label class="opt"><input type="checkbox" name="kiinnostus" value="Data"><span>Datan käsittelyä ja kuvaajia</span></label>
+        <label class="opt"><input type="checkbox" name="kiinnostus" value="Automaatio"><span>Automaatiota ja skriptejä</span></label>
+        <label class="opt"><input type="checkbox" name="kiinnostus" value="En tiedä"><span>En tiedä vielä — näytä vaihtoehtoja</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Miten opit parhaiten?</legend>
+        <label class="opt"><input type="radio" name="tapa" value="Teoria ensin" required><span>Vähän teoriaa ensin, sitten tekemään</span></label>
+        <label class="opt"><input type="radio" name="tapa" value="Tekemällä"><span>Suoraan tekemään, teoria matkan varrella</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Tahti?</legend>
+        <label class="opt"><input type="radio" name="tahti" value="Rauhallinen" required><span>Rauhallinen — pieniä askeleita</span></label>
+        <label class="opt"><input type="radio" name="tahti" value="Tehokas"><span>Tehokas — haastetta saa olla</span></label>
+      </fieldset>
+
+      <div class="btn-row">
+        <button class="btn" type="submit">Tallenna vastaukset</button>
+      </div>
+      <div class="result" id="kyselyOut" hidden></div>
+    </form>
+  </section>
+
+  <!-- ============ OSA 3: KOODAUSTESTI ============ -->
+  <section id="koe">
+    <p class="kicker">Osa 3 · Koodaustesti</p>
+    <h2>Pieni koe — neljä kysymystä</h2>
+    <p class="lead">Ei haittaa vaikka menisi pieleen. Tämä vain säätää aloitustasosi kohdilleen. Lue koodi rauhassa ja valitse mitä <code>console.log</code> tulostaa.</p>
+
+    <form class="panel" id="koeForm">
+      <div class="q" data-correct="b">
+        <p class="qtext">Kysymys 1</p>
+        <pre>let hinta = 10;
+hinta = hinta + 5;
+console.log(hinta);</pre>
+        <label class="opt"><input type="radio" name="q1" value="a" required><span>10</span></label>
+        <label class="opt"><input type="radio" name="q1" value="b"><span>15</span></label>
+        <label class="opt"><input type="radio" name="q1" value="c"><span>"10 + 5"</span></label>
+        <label class="opt"><input type="radio" name="q1" value="d"><span>Virhe</span></label>
+        <p class="verdict" hidden></p>
+      </div>
+
+      <div class="q" data-correct="b">
+        <p class="qtext">Kysymys 2</p>
+        <pre>const nimet = ["Aino", "Veeti", "Sofia"];
+console.log(nimet.length);</pre>
+        <label class="opt"><input type="radio" name="q2" value="a" required><span>2</span></label>
+        <label class="opt"><input type="radio" name="q2" value="b"><span>3</span></label>
+        <label class="opt"><input type="radio" name="q2" value="c"><span>"Aino"</span></label>
+        <label class="opt"><input type="radio" name="q2" value="d"><span>Virhe</span></label>
+        <p class="verdict" hidden></p>
+      </div>
+
+      <div class="q" data-correct="c">
+        <p class="qtext">Kysymys 3</p>
+        <pre>function tuplaa(luvut) {
+  return luvut.map(n =&gt; n * 2);
+}
+const tulos = tuplaa([1, 2, 3]);
+console.log(tulos);</pre>
+        <label class="opt"><input type="radio" name="q3" value="a" required><span>[1, 2, 3]</span></label>
+        <label class="opt"><input type="radio" name="q3" value="b"><span>12</span></label>
+        <label class="opt"><input type="radio" name="q3" value="c"><span>[2, 4, 6]</span></label>
+        <label class="opt"><input type="radio" name="q3" value="d"><span>Virhe</span></label>
+        <p class="verdict" hidden></p>
+      </div>
+
+      <div class="q" data-correct="b">
+        <p class="qtext">Kysymys 4 — edellisen jälkeen: missä tilassa alkuperäinen taulukko <code>[1, 2, 3]</code> on?</p>
+        <label class="opt"><input type="radio" name="q4" value="a" required><span>Muuttui muotoon [2, 4, 6]</span></label>
+        <label class="opt"><input type="radio" name="q4" value="b"><span>Pysyi ennallaan [1, 2, 3]</span></label>
+        <label class="opt"><input type="radio" name="q4" value="c"><span>Tyhjeni</span></label>
+        <label class="opt"><input type="radio" name="q4" value="d"><span><code>map</code> poisti sen</span></label>
+        <p class="verdict" hidden></p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" type="submit">Tarkista vastaukset</button>
+      </div>
+      <div class="result" id="koeOut" hidden></div>
+    </form>
+  </section>
+
+  <!-- ============ OSA 4: YHTEENVETO + TIKETTI ============ -->
+  <section id="yhteenveto">
+    <p class="kicker">Osa 4 · Yhteenveto</p>
+    <h2>Mitä opit — ja mitä tehdään seuraavaksi?</h2>
+    <p class="lead">Viimeinen ruutu. Näistä vastauksista syntyy tiketti, jonka pohjalta rakennetaan sinun oppituntisi 2.</p>
+
+    <form class="panel" id="formForm">
+      <label class="field">
+        <span>Nimesi</span>
+        <input type="text" name="nimi" value="Ohto" required>
+      </label>
+      <label class="field">
+        <span>Mitä jäi mieleen tästä oppitunnista?</span>
+        <textarea name="opittu" rows="3" placeholder="Esim. tajusin että kone tekee tismalleen mitä käsketään…" required></textarea>
+      </label>
+      <label class="field">
+        <span>Mikä jäi epäselväksi tai mietityttää?</span>
+        <textarea name="epaselva" rows="3" placeholder="Esim. mikä ero on muuttujalla ja funktiolla?"></textarea>
+      </label>
+      <label class="field">
+        <span>Mitä haluaisit oppia seuraavaksi?</span>
+        <select name="seuraava" required>
+          <option value="">— valitse —</option>
+          <option>Muuttujat ja tyypit</option>
+          <option>Ehtolauseet (if / else)</option>
+          <option>Silmukat (for, while)</option>
+          <option>Funktiot</option>
+          <option>Taulukot ja Array.map</option>
+          <option>Oliot</option>
+          <option>Oma ehdotus (kirjoita "epäselvää"-kenttään)</option>
+        </select>
+      </label>
+
+      <div class="btn-row">
+        <button class="btn" type="submit">Luo tiketti</button>
+      </div>
+
+      <div id="ticketArea" hidden style="margin-top:1.2rem">
+        <p class="note">Tallenna tämä tiedostona <span class="filename" id="ticketName">tickets/002-oppitunti-02.md</span></p>
+        <textarea id="ticketOut" readonly aria-label="Generoitu tiketti"></textarea>
+        <div class="btn-row">
+          <button class="btn secondary" type="button" id="copyBtn">Kopioi leikepöydälle</button>
+          <button class="btn secondary" type="button" id="downloadBtn">Lataa .md</button>
+        </div>
+        <p class="note" id="copyMsg" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<footer>
+  🎓 Koodikoulu · Oppitunti 1 — intro. Kaikki tila tallentuu vain tähän selaimeen (<code>localStorage</code>, avaimet <code>kk_*</code>).
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- localStorage-apurit ----------
+  var LS = {
+    get: function (k, fallback) {
+      try { var v = localStorage.getItem(k); return v == null ? fallback : JSON.parse(v); }
+      catch (e) { return fallback; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    }
+  };
+
+  // ---------- Teema ----------
+  var root = document.documentElement;
+  var savedTheme = LS.get("kk_theme", null);
+  if (savedTheme === "light" || savedTheme === "dark") root.setAttribute("data-theme", savedTheme);
+  document.getElementById("themeBtn").addEventListener("click", function () {
+    var cur = root.getAttribute("data-theme");
+    var next = cur === "light" ? "dark" : cur === "dark" ? "light"
+      : (window.matchMedia("(prefers-color-scheme: light)").matches ? "dark" : "light");
+    root.setAttribute("data-theme", next);
+    LS.set("kk_theme", next);
+  });
+
+  // ---------- Edistyminen ----------
+  var progress = LS.get("kk_progress_l1", { intro: false, kysely: false, koe: false, form: false });
+  function renderProgress() {
+    document.querySelectorAll(".steps a").forEach(function (a) {
+      a.setAttribute("data-done", progress[a.getAttribute("data-step")] ? "1" : "0");
+    });
+  }
+  function mark(step) {
+    if (!progress[step]) { progress[step] = true; LS.set("kk_progress_l1", progress); renderProgress(); }
+  }
+  renderProgress();
+
+  document.getElementById("introDone").addEventListener("click", function () {
+    mark("intro");
+    document.getElementById("kysely").scrollIntoView();
+  });
+
+  // ---------- Osa 2: Lähtökysely ----------
+  var kyselyForm = document.getElementById("kyselyForm");
+  var kyselyOut = document.getElementById("kyselyOut");
+
+  var savedKysely = LS.get("kk_lahtokysely", null);
+  if (savedKysely) {
+    restoreForm(kyselyForm, savedKysely);
+    showKyselySummary(savedKysely);
+  }
+
+  kyselyForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var data = {
+      kokemus: fieldVal(kyselyForm, "kokemus"),
+      kiinnostus: fieldValAll(kyselyForm, "kiinnostus"),
+      tapa: fieldVal(kyselyForm, "tapa"),
+      tahti: fieldVal(kyselyForm, "tahti")
+    };
+    if (!data.kiinnostus.length) { data.kiinnostus = ["En tiedä"]; }
+    LS.set("kk_lahtokysely", data);
+    showKyselySummary(data);
+    mark("kysely");
+    document.getElementById("koe").scrollIntoView();
+  });
+
+  function showKyselySummary(d) {
+    kyselyOut.hidden = false;
+    kyselyOut.classList.add("ok");
+    kyselyOut.innerHTML =
+      "<strong>Tallennettu.</strong> Kokemus: " + esc(d.kokemus) +
+      " · Kiinnostus: " + esc(d.kiinnostus.join(", ")) +
+      " · Tapa: " + esc(d.tapa) + " · Tahti: " + esc(d.tahti);
+  }
+
+  // ---------- Osa 3: Koodaustesti ----------
+  var koeForm = document.getElementById("koeForm");
+  var koeOut = document.getElementById("koeOut");
+
+  koeForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var qs = koeForm.querySelectorAll(".q");
+    var correct = 0;
+    qs.forEach(function (q, i) {
+      var want = q.getAttribute("data-correct");
+      var got = fieldVal(koeForm, "q" + (i + 1));
+      var v = q.querySelector(".verdict");
+      v.hidden = false;
+      if (got === want) {
+        correct++;
+        v.className = "verdict ok";
+        v.textContent = "✓ Oikein";
+      } else {
+        v.className = "verdict no";
+        v.textContent = "✗ Oikea vastaus oli: " + optLabel(q, want);
+      }
+    });
+    var taso = correct <= 1 ? 1 : correct <= 3 ? 2 : 3;
+    var kuvaus = taso === 1
+      ? "Aloitetaan perusteista: muuttujat, tyypit, ehdot, silmukat."
+      : taso === 2
+      ? "Hyppy funktioihin, taulukoihin ja array-metodeihin sopii hyvin."
+      : "Perusteet ovat vahvat — mennään korkeamman kertaluvun funktioihin ja asynkroniin.";
+    var result = { oikein: correct, yhteensa: qs.length, taso: taso };
+    LS.set("kk_testitulos", result);
+    koeOut.hidden = false;
+    koeOut.classList.add("ok");
+    koeOut.innerHTML = "<strong>" + correct + " / " + qs.length + " oikein → arvioitu taso " + taso + ".</strong> " + esc(kuvaus);
+    mark("koe");
+    document.getElementById("yhteenveto").scrollIntoView();
+  });
+
+  // ---------- Osa 4: Yhteenveto + tiketti ----------
+  var formForm = document.getElementById("formForm");
+  var ticketArea = document.getElementById("ticketArea");
+  var ticketOut = document.getElementById("ticketOut");
+  var ticketName = document.getElementById("ticketName");
+  var copyMsg = document.getElementById("copyMsg");
+
+  formForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var kysely = LS.get("kk_lahtokysely", null);
+    var testi = LS.get("kk_testitulos", null);
+    var f = {
+      nimi: (formForm.nimi.value || "Oppija").trim(),
+      opittu: formForm.opittu.value.trim(),
+      epaselva: formForm.epaselva.value.trim(),
+      seuraava: formForm.seuraava.value
+    };
+    LS.set("kk_loppuform_l1", f);
+    mark("form");
+
+    var slug = slugify(f.seuraava);
+    var fname = "tickets/002-oppitunti-02-" + slug + ".md";
+    ticketName.textContent = fname;
+    ticketOut.value = buildTicket(f, kysely, testi);
+    ticketArea.hidden = false;
+    copyMsg.textContent = "";
+    ticketArea.scrollIntoView();
+
+    document.getElementById("downloadBtn").onclick = function () {
+      var blob = new Blob([ticketOut.value], { type: "text/markdown;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = fname.split("/").pop();
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    };
+    document.getElementById("copyBtn").onclick = function () {
+      var text = ticketOut.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { copyMsg.textContent = "Kopioitu. Liitä tiedostoon " + fname; },
+          function () { fallbackCopy(); }
+        );
+      } else { fallbackCopy(); }
+      function fallbackCopy() {
+        ticketOut.removeAttribute("readonly");
+        ticketOut.select();
+        try { document.execCommand("copy"); copyMsg.textContent = "Kopioitu."; }
+        catch (e) { copyMsg.textContent = "Kopiointi ei onnistunut — valitse teksti ja kopioi käsin."; }
+        ticketOut.setAttribute("readonly", "");
+      }
+    };
+  });
+
+  function buildTicket(f, kysely, testi) {
+    var today = new Date().toISOString().slice(0, 10);
+    var taso = testi ? testi.taso : "?";
+    var L = [];
+    L.push("# Tiketti 002 — Oppitunti 2: " + f.seuraava);
+    L.push("");
+    L.push("- luotu: " + today);
+    L.push("- epic: oppitunnit");
+    L.push("- status: todo");
+    L.push("- oppija: " + f.nimi);
+    L.push("- pohjautuu: oppitunti-01 (intro)");
+    L.push("");
+    L.push("## Lähtötaso");
+    if (kysely) {
+      L.push("- Aiempi kokemus: " + kysely.kokemus);
+      L.push("- Kiinnostuksen kohteet: " + kysely.kiinnostus.join(", "));
+      L.push("- Oppimistapa: " + kysely.tapa);
+      L.push("- Tahti: " + kysely.tahti);
+    } else {
+      L.push("- (lähtökyselyä ei täytetty)");
+    }
+    if (testi) {
+      L.push("- Koodaustesti: " + testi.oikein + "/" + testi.yhteensa + " oikein → arvioitu taso " + testi.taso);
+    } else {
+      L.push("- Koodaustesti: ei tehty");
+    }
+    L.push("");
+    L.push("## Mitä oppija kertoi oppineensa");
+    L.push(f.opittu || "(tyhjä)");
+    L.push("");
+    L.push("## Mikä jäi epäselväksi");
+    L.push(f.epaselva || "(tyhjä)");
+    L.push("");
+    L.push("## Seuraava oppitunti");
+    L.push("- Aihe: " + f.seuraava);
+    L.push("- Taso: " + taso);
+    L.push("- Peruste: oppijan oma valinta + koodaustestin tasoarvio");
+    L.push("");
+    L.push("## Acceptance criteria");
+    L.push("- [ ] Oppitunti generoitu schema `koodikoulu.oppitunti.v1` mukaan (aihe: " + f.seuraava + ", taso: " + taso + ")");
+    L.push("- [ ] Referenssiratkaisu läpäisee omat testinsä ENNEN kuin oppija näkee mitään");
+    L.push("- [ ] 3–6 testiä, vähintään yksi reunatapaus");
+    L.push("- [ ] Vihjeet paljastetaan yksi kerrallaan");
+    L.push("- [ ] Oppija saa vähintään yhden testin vihreäksi");
+    L.push("");
+    L.push("## Muistiinpanot generaattorille");
+    L.push("- Kieli yhtä yksinkertaista kuin introssa — 10-vuotias ymmärtää.");
+    L.push("- Käyttöliittymä suomeksi, muuttuja- ja funktionimet englanniksi.");
+    L.push("- Skenaario liitettävä oppijan kiinnostuksen kohteisiin.");
+    return L.join("\n");
+  }
+
+  // ---------- Yleisapurit ----------
+  function fieldVal(form, name) {
+    var el = form.querySelector("[name='" + name + "']:checked");
+    return el ? el.value : "";
+  }
+  function fieldValAll(form, name) {
+    return Array.prototype.map.call(
+      form.querySelectorAll("[name='" + name + "']:checked"), function (el) { return el.value; }
+    );
+  }
+  function restoreForm(form, data) {
+    Object.keys(data).forEach(function (name) {
+      var val = data[name];
+      var arr = Array.isArray(val) ? val : [val];
+      form.querySelectorAll("[name='" + name + "']").forEach(function (el) {
+        if (el.type === "radio" || el.type === "checkbox") {
+          if (arr.indexOf(el.value) !== -1) el.checked = true;
+        }
+      });
+    });
+  }
+  function optLabel(q, val) {
+    var el = q.querySelector("[value='" + val + "']");
+    return el && el.parentNode ? el.parentNode.textContent.trim() : val;
+  }
+  function slugify(s) {
+    return (s || "aihe").toLowerCase()
+      .replace(/[äå]/g, "a").replace(/ö/g, "o")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "aihe";
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+})();
+</script>
+</body>
+</html>
