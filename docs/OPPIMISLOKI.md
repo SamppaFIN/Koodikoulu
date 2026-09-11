@@ -67,6 +67,8 @@ Jokainen oppitunti / oppimissessio noudattaa samaa kaavaa:
 | `kk_lahtokysely` | `{kokemus, kiinnostus[], tapa, tahti}` |
 | `kk_testitulos` | `{oikein, yhteensa, taso}` |
 | `kk_loppuform_l1` | `{nimi, opittu, epaselva, seuraava}` |
+| `kk_draft` | `{aihe_id: koodiluonnos}` — claude.md §9:n kanoninen avain, käytössä oppitunti 2 alkaen |
+| `kk_progress` | `{aihe_id: {yritykset, vihjeet, lapaisty}}` — kanoninen avain, käytössä oppitunti 2 alkaen |
 
 > Huom: claude.md §9 määrittelee kanoniset avaimet (`kk_profile`, `kk_path`, …).
 > Introsivu käyttää omia `_l1`-päätteisiä avaimia kunnes varsinainen tilamalli
@@ -99,3 +101,26 @@ Jokainen oppitunti / oppimissessio noudattaa samaa kaavaa:
 - Luotu `tickets/`-kansio, `tickets/README.md`, `tickets/001-oppitunti-01-intro.md`.
 - **Seuraava:** Ohto käy sivun läpi → loppuform tuottaa `tickets/002-*.md` →
   rakennetaan oppitunti 2 sen pohjalta.
+- Repo pushattu: https://github.com/SamppaFIN/Koodikoulu (main-haara).
+
+### 2026-09-11 — Sessio 2
+
+- Ohto suoritti oppitunnin 1: koe 2/4 oikein → taso 2, kiinnostus pelit,
+  tahti rauhallinen, tapa "teoria ensin". Tallennettu `tickets/002-*.md`.
+- Rakennettu `public/oppitunti-02.html` (Taulukot ja Array.map, taso 2):
+  - Teoria + 1 SVG-kaavio (map muuntaa taulukon, alkuperäinen säilyy).
+  - Skenaario sidottu peleihin (pelaajien pisteiden tuplaus bonuskierroksella).
+  - Oikea koodieditori: rivinumerot, Tab sisentää, luonnos talteen `kk_draft`.
+  - **Testiajuri Web Workerissa** (ensimmäinen kerta): 5 testiä (data, ei koodia),
+    2 s timeout, worker terminoidaan aina onnistuessa/timeoutissa/virheessä,
+    syntaksivirhe erotellaan testivirheestä. `new Function` vain workerin
+    sisällä — ei koskaan pääsäikeessä (bugi #10).
+  - Referenssiratkaisu (`tuplaaPisteet`) validoitu Node.js:llä ennen julkaisua —
+    kaikki 5 testiä vihreänä. Ratkaisua ei upoteta sivulle, ettei se vuoda oppijalle.
+  - Vihjeet yksi kerrallaan, määrä + yritykset + läpäisy tallennettu `kk_progress`-avaimeen.
+  - Yhteenveto-lomake generoi `tickets/003-*.md`:n, taso ehdotetaan tuloksesta
+    (0 vihjettä + kaikki läpi → nosta tasoa 3; ei yhtään läpi → laske tasoa 1).
+- **Avainkäytäntö muuttui:** oppitunti 2 alkaen käytetään claude.md §9:n kanonisia
+  avaimia `kk_draft` / `kk_progress` (aiemmin oppitunti 1:n omat `_l1`-avaimet —
+  ne jäävät ennalleen, eivät riko mitään, mutta eivät ole enää malli uusille sivuille).
+- **Seuraava:** Ohto suorittaa oppitunnin 2 → `tickets/003-*.md` → oppitunti 3.

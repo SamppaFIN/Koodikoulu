@@ -36,7 +36,7 @@ ei kirjastoriippuvuuksia, avautuu tiedostona ilman palvelinta.
 - [x] Light/dark-toggle, tila localStoragessa
 - [x] Koodaustesti antaa tasoarvion 1–3
 - [x] Loppuform generoi ladattavan/kopioitavan markdown-tiketin
-- [ ] Ohto on käynyt sivun läpi ja `tickets/002-*.md` on luotu
+- [x] Ohto on käynyt sivun läpi ja `tickets/002-*.md` on luotu
 
 ## Seuraava
 

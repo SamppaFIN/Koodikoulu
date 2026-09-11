@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koodikoulu · Oppitunti 2 — Taulukot ja Array.map</title>
+<style>
+  :root {
+    --c-bg:        oklch(0.12 0.02 260);
+    --c-surface:   oklch(0.17 0.02 260);
+    --c-surface-2: oklch(0.22 0.02 260);
+    --c-border:    oklch(0.34 0.02 260);
+    --c-text:      oklch(0.92 0.01 260);
+    --c-muted:     oklch(0.70 0.02 260);
+    --c-accent:    oklch(0.68 0.15 240);
+    --c-success:   oklch(0.68 0.18 145);
+    --c-danger:    oklch(0.65 0.20 25);
+    --c-warn:      oklch(0.80 0.14 85);
+    --touch:       44px;
+    --radius:      14px;
+    --maxw:        980px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --c-bg:        oklch(0.97 0.006 260);
+    --c-surface:   oklch(1 0 0);
+    --c-surface-2: oklch(0.945 0.008 260);
+    --c-border:    oklch(0.84 0.01 260);
+    --c-text:      oklch(0.22 0.02 260);
+    --c-muted:     oklch(0.46 0.02 260);
+    --c-accent:    oklch(0.52 0.16 240);
+    --c-success:   oklch(0.52 0.16 145);
+    --c-danger:    oklch(0.53 0.20 25);
+    --c-warn:      oklch(0.62 0.13 85);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]):not([data-theme="light"]) {
+      --c-bg:        oklch(0.97 0.006 260);
+      --c-surface:   oklch(1 0 0);
+      --c-surface-2: oklch(0.945 0.008 260);
+      --c-border:    oklch(0.84 0.01 260);
+      --c-text:      oklch(0.22 0.02 260);
+      --c-muted:     oklch(0.46 0.02 260);
+      --c-accent:    oklch(0.52 0.16 240);
+      --c-success:   oklch(0.52 0.16 145);
+      --c-danger:    oklch(0.53 0.20 25);
+      --c-warn:      oklch(0.62 0.13 85);
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: clamp(0.98rem, 0.92rem + 0.35vw, 1.1rem);
+    line-height: 1.65;
+  }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+  a { color: var(--c-accent); }
+  :focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; border-radius: 4px; }
+
+  .glass-header {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem;
+    padding: 0.7rem clamp(0.9rem, 3vw, 1.5rem);
+    background: color-mix(in oklab, var(--c-bg) 82%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--c-border);
+  }
+  .glass-header h1 { font-size: 1rem; margin: 0; font-weight: 650; }
+  .glass-header h1 .dim { color: var(--c-muted); font-weight: 500; }
+  .steps { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-left: auto; }
+  .steps a {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; text-decoration: none; color: var(--c-muted);
+    border: 1px solid var(--c-border); border-radius: 999px;
+    padding: 0.28rem 0.7rem; min-height: 32px;
+  }
+  .steps a .dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--c-surface-2); border: 1px solid var(--c-border); }
+  .steps a[data-done="1"] { color: var(--c-text); border-color: var(--c-success); }
+  .steps a[data-done="1"] .dot { background: var(--c-success); border-color: var(--c-success); }
+  .theme-btn { min-height: 32px; padding: 0.28rem 0.7rem; background: var(--c-surface); color: var(--c-text); border: 1px solid var(--c-border); border-radius: 999px; font-size: 0.82rem; cursor: pointer; }
+
+  main { max-width: var(--maxw); margin: 0 auto; padding: clamp(1.2rem, 4vw, 2.4rem) clamp(0.9rem, 3vw, 1.5rem) 4rem; }
+  section { scroll-margin-top: 72px; margin-top: 3.2rem; }
+  section:first-of-type { margin-top: 1.2rem; }
+
+  .profile {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.2rem; align-items: center;
+    border: 1px solid var(--c-border); border-radius: 999px;
+    background: var(--c-surface); padding: 0.55rem 1rem;
+    font-size: 0.85rem; color: var(--c-muted);
+  }
+  .profile b { color: var(--c-text); }
+
+  .kicker { color: var(--c-accent); font-weight: 650; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 0.3rem; }
+  h2 { font-size: clamp(1.3rem, 1.1rem + 1.2vw, 1.7rem); margin: 0 0 0.6rem; line-height: 1.25; }
+  .lead { color: var(--c-muted); max-width: 65ch; margin: 0 0 1.2rem; }
+
+  .panel { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); padding: clamp(1.1rem, 3.5vw, 1.8rem); }
+  .panel + .panel { margin-top: 1rem; }
+
+  pre, code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .theory pre {
+    background: var(--c-bg); border: 1px solid var(--c-border); border-radius: 8px;
+    padding: 0.8rem 0.9rem; overflow-x: auto; font-size: 14px; line-height: 1.5; margin: 0.8rem 0;
+  }
+  .theory p { margin: 0.7rem 0; }
+  .theory code { font-size: 0.92em; background: var(--c-surface-2); padding: 0.1em 0.35em; border-radius: 4px; }
+
+  figure.diagram { margin: 1.4rem 0 0; }
+  figure.diagram .scroll { overflow-x: auto; border: 1px solid var(--c-border); border-radius: var(--radius); background: var(--c-surface); padding: 1rem; }
+  figure.diagram svg { display: block; width: 100%; min-width: 460px; height: auto; }
+  figure.diagram figcaption { color: var(--c-muted); font-size: 0.85rem; margin-top: 0.5rem; text-align: center; }
+
+  .scenario {
+    border-left: 3px solid var(--c-accent); background: var(--c-surface-2);
+    padding: 0.9rem 1.1rem; border-radius: 0 8px 8px 0; margin: 0 0 1.4rem;
+  }
+  .scenario p { margin: 0; }
+
+  .editor { display: flex; border: 1px solid var(--c-border); border-radius: 8px; overflow: hidden; background: var(--c-bg); }
+  .gutter {
+    padding: 0.8rem 0.55rem; text-align: right; color: var(--c-muted); background: var(--c-surface-2);
+    font: 14px ui-monospace, "SF Mono", Menlo, Consolas, monospace; line-height: 1.55; user-select: none;
+    overflow: hidden; white-space: pre; border-right: 1px solid var(--c-border); min-width: 2.6em;
+  }
+  textarea#code {
+    flex: 1; border: 0; outline: 0; resize: vertical; background: transparent; color: var(--c-text);
+    font: 14px ui-monospace, "SF Mono", Menlo, Consolas, monospace; line-height: 1.55;
+    padding: 0.8rem 0.9rem; white-space: pre; overflow: auto; min-height: 200px; tab-size: 2;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    min-height: var(--touch); padding: 0.6rem 1.2rem;
+    background: var(--c-accent); color: oklch(0.15 0.02 260);
+    border: 1px solid transparent; border-radius: 10px;
+    font: inherit; font-weight: 650; cursor: pointer;
+  }
+  .btn.secondary { background: var(--c-surface-2); color: var(--c-text); border-color: var(--c-border); }
+  .btn.warn { background: var(--c-warn); color: oklch(0.15 0.02 260); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.9rem; align-items: center; }
+
+  .note { font-size: 0.9rem; color: var(--c-muted); }
+  .banner { padding: 0.7rem 0.9rem; border-radius: 8px; border: 1px solid var(--c-border); background: var(--c-surface-2); font-size: 0.92rem; }
+  .banner.danger { border-color: var(--c-danger); color: var(--c-text); }
+  .banner.success { border-color: var(--c-success); }
+
+  .tests { margin-top: 1.2rem; display: grid; gap: 0.6rem; }
+  .test-row {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.7rem;
+    padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--c-border); background: var(--c-surface-2);
+    font-size: 0.92rem;
+  }
+  .test-row .mark { font-weight: 700; }
+  .test-row.pass { border-color: var(--c-success); }
+  .test-row.pass .mark { color: var(--c-success); }
+  .test-row.fail { border-color: var(--c-danger); }
+  .test-row.fail .mark { color: var(--c-danger); }
+  .test-row .name { font-weight: 600; flex: none; }
+  .test-row .detail { color: var(--c-muted); font-family: ui-monospace, monospace; font-size: 0.85rem; }
+
+  .summary-line { margin-top: 1rem; font-weight: 650; }
+
+  .hints { margin-top: 1.2rem; }
+  .hint-item {
+    padding: 0.6rem 0.85rem; border-radius: 8px; border: 1px solid var(--c-border);
+    background: var(--c-surface-2); margin-bottom: 0.5rem; font-size: 0.92rem;
+  }
+
+  fieldset { border: 1px solid var(--c-border); border-radius: 10px; padding: 1rem 1.1rem; margin: 0 0 1.1rem; }
+  legend { padding: 0 0.4rem; font-weight: 600; }
+  .opt { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0.5rem; border-radius: 8px; min-height: var(--touch); cursor: pointer; }
+  .opt:hover { background: var(--c-surface-2); }
+  .opt input { margin-top: 0.28rem; width: 1.05rem; height: 1.05rem; accent-color: var(--c-accent); flex: none; }
+  .opt span { flex: 1; }
+  label.field { display: block; margin: 0 0 1rem; }
+  label.field > span { display: block; margin-bottom: 0.35rem; font-weight: 600; }
+  textarea.text, input[type="text"], select {
+    width: 100%; background: var(--c-bg); color: var(--c-text);
+    border: 1px solid var(--c-border); border-radius: 8px; padding: 0.6rem 0.7rem; font: inherit; resize: vertical;
+  }
+  select { min-height: var(--touch); }
+
+  #ticketOut { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; line-height: 1.5; min-height: 300px; width: 100%; background: var(--c-bg); color: var(--c-text); border: 1px solid var(--c-border); border-radius: 8px; padding: 0.7rem; }
+  .filename { font-family: ui-monospace, monospace; font-size: 0.9rem; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: 6px; padding: 0.15rem 0.45rem; }
+
+  footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.5rem 3rem; color: var(--c-muted); font-size: 0.85rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="glass-header">
+  <h1>🎓 Koodikoulu <span class="dim">· Oppitunti 2</span></h1>
+  <nav class="steps" aria-label="Edistyminen">
+    <a href="#teoria"  data-step="teoria"><span class="dot"></span>1 · Teoria</a>
+    <a href="#tehtava" data-step="tehtava"><span class="dot"></span>2 · Tehtävä</a>
+    <a href="#yhteenveto" data-step="form"><span class="dot"></span>3 · Yhteenveto</a>
+  </nav>
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Vaihda vaalea/tumma teema">🌓 Teema</button>
+</header>
+
+<main>
+
+  <p class="profile">
+    <span>👤 <b>Ohto</b></span>
+    <span>Taso <b>2</b></span>
+    <span>Kiinnostus: <b>pelit</b></span>
+    <span>Tahti: <b>rauhallinen</b></span>
+    <span>Oppitunti 1: <b>tehty</b> — koe 2/4 oikein</span>
+  </p>
+
+  <!-- ============ OSA 1: TEORIA ============ -->
+  <section id="teoria">
+    <p class="kicker">Osa 1 · Teoria</p>
+    <h2>Taulukot ja <code>Array.map</code></h2>
+    <p class="lead">Oppitunti 1:ssä opit että ohjelma on ohjeiden lista ja että testit tarkistavat toimiiko koodi. Tänään opit työkalun, jolla käsitellään monta arvoa kerralla — hyödyllinen juuri peleissä.</p>
+
+    <div class="panel theory">
+      <p><b>Taulukko</b> (array) on lista, jossa monta arvoa on peräkkäin yhden nimen alla.
+      Pelissä esimerkiksi hahmojen pisteet voisivat olla taulukko:</p>
+      <pre>const pisteet = [10, 25, 8]; // kolme hahmoa, kolme pistemäärää</pre>
+
+      <p>Jos haluat tehdä <b>jokaiselle</b> taulukon arvolle saman jutun — esimerkiksi tuplata
+      jokaisen hahmon pisteet — et käy taulukkoa läpi käsin yksi kerrallaan. Siihen on valmis
+      työkalu: <code>map</code>.</p>
+
+      <p><code>map</code> ottaa taulukon, tekee jokaiselle alkiolle saman muunnoksen, ja palauttaa
+      <b>uuden</b> taulukon. Alkuperäinen taulukko ei muutu — se jää ennalleen.</p>
+
+      <pre>const pisteet = [10, 25, 8];
+const tuplat = pisteet.map(p =&gt; p * 2);
+// tuplat on  [20, 50, 16]
+// pisteet on yhä [10, 25, 8]</pre>
+
+      <p><code>p =&gt; p * 2</code> on pieni funktio: se saa yhden alkion (<code>p</code>) ja
+      palauttaa uuden arvon. <code>map</code> kutsuu tätä funktiota jokaiselle taulukon alkiolle
+      vuorollaan ja kerää tulokset uuteen taulukkoon.</p>
+    </div>
+
+    <figure class="diagram">
+      <div class="scroll">
+        <svg viewBox="0 0 720 190" role="img" aria-label="map muuntaa jokaisen alkion: 10 tulee 20, 25 tulee 50, 8 tulee 16, ja alkuperäinen taulukko pysyy ennallaan">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="var(--c-accent)"/>
+            </marker>
+          </defs>
+          <g font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">
+            <text x="90"  y="20" fill="var(--c-muted)" font-size="12">pisteet</text>
+            <g fill="var(--c-text)">
+              <rect x="20"  y="30" width="60" height="46" rx="8" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="50"  y="58">10</text>
+              <rect x="90"  y="30" width="60" height="46" rx="8" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="120" y="58">25</text>
+              <rect x="160" y="30" width="60" height="46" rx="8" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="190" y="58">8</text>
+            </g>
+            <rect x="270" y="15" width="140" height="90" rx="10" fill="var(--c-surface-2)" stroke="var(--c-accent)"/>
+            <text x="340" y="55" fill="var(--c-text)">.map(p =&gt;</text>
+            <text x="340" y="75" fill="var(--c-text)">p * 2)</text>
+            <line x1="222" y1="53" x2="268" y2="53" stroke="var(--c-accent)" stroke-width="2" marker-end="url(#ah2)"/>
+            <line x1="412" y1="53" x2="458" y2="53" stroke="var(--c-accent)" stroke-width="2" marker-end="url(#ah2)"/>
+            <text x="540" y="20" fill="var(--c-muted)" font-size="12">tuplat (uusi)</text>
+            <g fill="var(--c-text)">
+              <rect x="460" y="30" width="60" height="46" rx="8" fill="var(--c-surface-2)" stroke="var(--c-success)"/><text x="490" y="58">20</text>
+              <rect x="530" y="30" width="60" height="46" rx="8" fill="var(--c-surface-2)" stroke="var(--c-success)"/><text x="560" y="58">50</text>
+              <rect x="600" y="30" width="60" height="46" rx="8" fill="var(--c-surface-2)" stroke="var(--c-success)"/><text x="630" y="58">16</text>
+            </g>
+            <text x="120" y="140" fill="var(--c-muted)" font-size="12">pisteet on yhä [10, 25, 8] — map ei muuta alkuperäistä</text>
+            <g fill="var(--c-text)" opacity="0.6">
+              <rect x="20"  y="150" width="60" height="30" rx="6" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="50"  y="170" font-size="12">10</text>
+              <rect x="90"  y="150" width="60" height="30" rx="6" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="120" y="170" font-size="12">25</text>
+              <rect x="160" y="150" width="60" height="30" rx="6" fill="var(--c-surface-2)" stroke="var(--c-border)"/><text x="190" y="170" font-size="12">8</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <figcaption>map luo uuden taulukon — vanha jää koskemattomaksi.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ OSA 2: TEHTÄVÄ ============ -->
+  <section id="tehtava">
+    <p class="kicker">Osa 2 · Tehtävä</p>
+    <h2>Tuplaa pelaajien pisteet</h2>
+
+    <div class="scenario">
+      <p>Rakennat pientä peliä. Pelaajat keräävät pisteitä tasoilla. Kun tiimi pääsee
+      <b>bonuskierrokselle</b>, kaikkien hahmojen pisteet tuplataan kerralla.
+      Kirjoita funktio joka tuplaa jokaisen hahmon pisteet.</p>
+    </div>
+
+    <div class="panel">
+      <p class="note">Muokkaa <code>tuplaaPisteet</code>-funktiota alla. <kbd>Tab</kbd> sisentää.</p>
+      <div class="editor">
+        <div class="gutter" id="gutter" aria-hidden="true">1</div>
+        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="runBtn" type="button">▶ Aja testit</button>
+        <button class="btn secondary" id="hintBtn" type="button">💡 Näytä vihje (<span id="hintCount">0</span>/3)</button>
+        <button class="btn secondary" id="resetBtn" type="button">↺ Palauta aloituskoodi</button>
+      </div>
+
+      <div id="runBanner" hidden></div>
+      <div class="tests" id="testResults"></div>
+      <p class="summary-line" id="summaryLine" hidden></p>
+
+      <div class="hints" id="hintsBox"></div>
+    </div>
+  </section>
+
+  <!-- ============ OSA 3: YHTEENVETO + TIKETTI ============ -->
+  <section id="yhteenveto">
+    <p class="kicker">Osa 3 · Yhteenveto</p>
+    <h2>Mitä opit — ja mitä tehdään seuraavaksi?</h2>
+    <p class="lead">Näistä vastauksista syntyy tiketti oppitunnille 3. Voit täyttää tämän vaikka et saisi vielä kaikkia testejä vihreäksi.</p>
+
+    <form class="panel" id="formForm">
+      <label class="field">
+        <span>Nimesi</span>
+        <input type="text" id="nimi" value="Ohto" required>
+      </label>
+      <label class="field">
+        <span>Mitä jäi mieleen tästä oppitunnista?</span>
+        <textarea class="text" id="opittu" rows="3" placeholder="Esim. map tekee uuden taulukon eikä muuta vanhaa…" required></textarea>
+      </label>
+      <label class="field">
+        <span>Mikä jäi epäselväksi tai mietityttää?</span>
+        <textarea class="text" id="epaselva" rows="3"></textarea>
+      </label>
+      <label class="field">
+        <span>Mitä haluaisit oppia seuraavaksi?</span>
+        <select id="seuraava" required>
+          <option value="">— valitse —</option>
+          <option>Array.filter</option>
+          <option>Array.reduce</option>
+          <option>Ehtolauseet (if / else)</option>
+          <option>Silmukat (for, while)</option>
+          <option>Oliot</option>
+          <option>Kertaa taulukot ja map</option>
+        </select>
+      </label>
+
+      <div class="btn-row">
+        <button class="btn" type="submit">Luo tiketti</button>
+      </div>
+
+      <div id="ticketArea" hidden style="margin-top:1.2rem">
+        <p class="note">Tallenna tämä tiedostona <span class="filename" id="ticketName">tickets/003-oppitunti-03.md</span></p>
+        <textarea id="ticketOut" readonly aria-label="Generoitu tiketti"></textarea>
+        <div class="btn-row">
+          <button class="btn secondary" type="button" id="copyBtn">Kopioi leikepöydälle</button>
+          <button class="btn secondary" type="button" id="downloadBtn">Lataa .md</button>
+        </div>
+        <p class="note" id="copyMsg" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<footer>
+  🎓 Koodikoulu · Oppitunti 2 — Taulukot ja Array.map. Koodisi ajetaan Web Workerissa, ei koskaan pääsäikeessä.
+  Tila tallentuu vain tähän selaimeen (<code>localStorage</code>).
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Oppitunnin data (schema koodikoulu.oppitunti.v1) ----------
+  var LESSON = {
+    schema: "koodikoulu.oppitunti.v1",
+    id: "js-array-map-01",
+    aihe: "Taulukot ja Array.map",
+    taso: 2,
+    aloituskoodi: "function tuplaaPisteet(pisteet) {\n  // kirjoita tähän\n}\n",
+    vientinimi: "tuplaaPisteet",
+    testit: [
+      { nimi: "tuplaa kolmen hahmon pisteet", syote: [[10, 25, 8]], odotettu: [20, 50, 16] },
+      { nimi: "yksi hahmo tiimissä",          syote: [[7]],         odotettu: [14] },
+      { nimi: "tyhjä tiimi (reunatapaus)",    syote: [[]],          odotettu: [] },
+      { nimi: "nollapisteet pysyy nollana",   syote: [[0, 5, 3]],   odotettu: [0, 10, 6] },
+      { nimi: "isotkin luvut toimivat",       syote: [[100, 250]],  odotettu: [200, 500] }
+    ],
+    vihjeet: [
+      "Käytä pisteet.map(...) — se käy taulukon läpi puolestasi, sinun ei tarvitse kirjoittaa silmukkaa.",
+      "map tarvitsee funktion joka saa yhden pisteen ja palauttaa uuden arvon, esim. p => p * 2.",
+      "Muista return — funktiosi pitää palauttaa map-kutsun tulos, ei vain laskea sitä."
+    ],
+    seuraavat_aiheet: ["Array.filter", "Array.reduce"]
+  };
+  // Huom: referenssiratkaisu on validoitu erikseen (node) ennen julkaisua — ei sisällytetä
+  // sivulle, ettei se vuoda oppijalle. Kaikki 5 testiä läpäisevät sen.
+
+  // ---------- localStorage-apurit (claude.md §9 -avaimet) ----------
+  var LS = {
+    get: function (k, fallback) {
+      try { var v = localStorage.getItem(k); return v == null ? fallback : JSON.parse(v); }
+      catch (e) { return fallback; }
+    },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  var draft = LS.get("kk_draft", {});
+  var progress = LS.get("kk_progress", {});
+  if (!progress[LESSON.id]) progress[LESSON.id] = { yritykset: 0, vihjeet: 0, lapaisty: false };
+
+  // ---------- Teema (jaettu oppitunti-01:n kanssa) ----------
+  var root = document.documentElement;
+  var savedTheme = LS.get("kk_theme", null);
+  if (savedTheme === "light" || savedTheme === "dark") root.setAttribute("data-theme", savedTheme);
+  document.getElementById("themeBtn").addEventListener("click", function () {
+    var cur = root.getAttribute("data-theme");
+    var next = cur === "light" ? "dark" : cur === "dark" ? "light"
+      : (window.matchMedia("(prefers-color-scheme: light)").matches ? "dark" : "light");
+    root.setAttribute("data-theme", next);
+    LS.set("kk_theme", next);
+  });
+
+  // ---------- Edistyminen (nav-pallot) ----------
+  var stepDone = { teoria: false, tehtava: false, form: false };
+  function renderSteps() {
+    document.querySelectorAll(".steps a").forEach(function (a) {
+      a.setAttribute("data-done", stepDone[a.getAttribute("data-step")] ? "1" : "0");
+    });
+  }
+  document.getElementById("teoria").addEventListener("click", function () { stepDone.teoria = true; renderSteps(); }, { once: true });
+  renderSteps();
+
+  // ---------- Editori: rivinumerot + Tab ----------
+  var code = document.getElementById("code");
+  var gutter = document.getElementById("gutter");
+  code.value = draft[LESSON.id] || LESSON.aloituskoodi;
+
+  function updateGutter() {
+    var n = code.value.split("\n").length;
+    var lines = [];
+    for (var i = 1; i <= n; i++) lines.push(i);
+    gutter.textContent = lines.join("\n");
+  }
+  code.addEventListener("input", function () {
+    updateGutter();
+    draft[LESSON.id] = code.value;
+    LS.set("kk_draft", draft);
+    stepDone.tehtava = true; renderSteps();
+  });
+  code.addEventListener("scroll", function () { gutter.scrollTop = code.scrollTop; });
+  code.addEventListener("keydown", function (e) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      var start = code.selectionStart, end = code.selectionEnd;
+      code.value = code.value.slice(0, start) + "  " + code.value.slice(end);
+      code.selectionStart = code.selectionEnd = start + 2;
+      code.dispatchEvent(new Event("input"));
+    }
+  });
+  updateGutter();
+
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    code.value = LESSON.aloituskoodi;
+    code.dispatchEvent(new Event("input"));
+    code.focus();
+  });
+
+  // ---------- Vihjeet: yksi kerrallaan ----------
+  var hintBtn = document.getElementById("hintBtn");
+  var hintCount = document.getElementById("hintCount");
+  var hintsBox = document.getElementById("hintsBox");
+  function renderHints() {
+    var shown = progress[LESSON.id].vihjeet;
+    hintCount.textContent = shown;
+    hintsBox.innerHTML = LESSON.vihjeet.slice(0, shown).map(function (h, i) {
+      return '<div class="hint-item"><b>Vihje ' + (i + 1) + ':</b> ' + esc(h) + '</div>';
+    }).join("");
+    hintBtn.disabled = shown >= LESSON.vihjeet.length;
+  }
+  hintBtn.addEventListener("click", function () {
+    if (progress[LESSON.id].vihjeet < LESSON.vihjeet.length) {
+      progress[LESSON.id].vihjeet++;
+      LS.set("kk_progress", progress);
+      renderHints();
+    }
+  });
+  renderHints();
+
+  // ---------- Testiajuri: Web Worker + 2s timeout ----------
+  var WORKER_SRC = [
+    'self.onmessage = function (e) {',
+    '  var code = e.data.code, vientinimi = e.data.vientinimi, testit = e.data.testit;',
+    '  var fn;',
+    '  try {',
+    '    fn = new Function(code + "\\n;return typeof " + vientinimi + " === \\"function\\" ? " + vientinimi + " : undefined;")();',
+    '  } catch (err) {',
+    '    postMessage({ type: "syntax-error", message: String(err && err.message || err) });',
+    '    return;',
+    '  }',
+    '  if (typeof fn !== "function") {',
+    '    postMessage({ type: "syntax-error", message: "Funktiota \\"" + vientinimi + "\\" ei löytynyt. Onko nimi ja return paikallaan?" });',
+    '    return;',
+    '  }',
+    '  var results = [];',
+    '  for (var i = 0; i < testit.length; i++) {',
+    '    var t = testit[i];',
+    '    try {',
+    '      var actual = fn.apply(null, t.syote);',
+    '      results.push({ nimi: t.nimi, pass: JSON.stringify(actual) === JSON.stringify(t.odotettu), actual: actual, expected: t.odotettu, error: null });',
+    '    } catch (err) {',
+    '      results.push({ nimi: t.nimi, pass: false, actual: undefined, expected: t.odotettu, error: String(err && err.message || err) });',
+    '    }',
+    '  }',
+    '  postMessage({ type: "done", results: results });',
+    '};'
+  ].join("\n");
+  var workerBlobUrl = URL.createObjectURL(new Blob([WORKER_SRC], { type: "application/javascript" }));
+
+  var activeWorker = null, activeTimeout = null;
+  function stopWorker() {
+    if (activeTimeout) { clearTimeout(activeTimeout); activeTimeout = null; }
+    if (activeWorker) { activeWorker.terminate(); activeWorker = null; }
+  }
+  window.addEventListener("beforeunload", stopWorker);
+
+  var runBtn = document.getElementById("runBtn");
+  var runBanner = document.getElementById("runBanner");
+  var testResults = document.getElementById("testResults");
+  var summaryLine = document.getElementById("summaryLine");
+  var lastPassCount = 0;
+
+  runBtn.addEventListener("click", function () {
+    stopWorker();
+    runBanner.hidden = true;
+    testResults.innerHTML = "";
+    summaryLine.hidden = true;
+    runBtn.disabled = true;
+    runBtn.textContent = "⏳ Ajetaan…";
+
+    progress[LESSON.id].yritykset++;
+    LS.set("kk_progress", progress);
+
+    try {
+      activeWorker = new Worker(workerBlobUrl);
+    } catch (err) {
+      finishRun();
+      showBanner("danger", "Selain ei sallinut testiajuria tässä ympäristössä: " + esc(String(err)));
+      return;
+    }
+
+    activeTimeout = setTimeout(function () {
+      stopWorker();
+      finishRun();
+      showBanner("danger", "⏱ Aikakatkaisu (2 s) — koodissa on ehkä ikuinen silmukka. Tarkista ehdot ja silmukat.");
+    }, 2000);
+
+    activeWorker.onmessage = function (e) {
+      stopWorker();
+      finishRun();
+      handleRunResult(e.data);
+    };
+    activeWorker.onerror = function (e) {
+      stopWorker();
+      finishRun();
+      showBanner("danger", "Virhe koodin suorituksessa: " + esc(e.message || "tuntematon virhe"));
+      e.preventDefault && e.preventDefault();
+    };
+
+    activeWorker.postMessage({ code: code.value, vientinimi: LESSON.vientinimi, testit: LESSON.testit });
+  });
+
+  function finishRun() {
+    runBtn.disabled = false;
+    runBtn.textContent = "▶ Aja testit";
+  }
+
+  function showBanner(kind, html) {
+    runBanner.hidden = false;
+    runBanner.className = "banner " + kind;
+    runBanner.innerHTML = html;
+  }
+
+  function handleRunResult(data) {
+    if (data.type === "syntax-error") {
+      showBanner("danger", "🐛 Koodissa on virhe: <code>" + esc(data.message) + "</code>");
+      return;
+    }
+    var results = data.results;
+    var passCount = results.filter(function (r) { return r.pass; }).length;
+    lastPassCount = passCount;
+
+    testResults.innerHTML = results.map(function (r) {
+      var cls = r.pass ? "pass" : "fail";
+      var mark = r.pass ? "✓" : "✗";
+      var detail = r.error
+        ? "virhe: " + esc(r.error)
+        : "odotettu " + esc(JSON.stringify(r.expected)) + " · saatu " + esc(JSON.stringify(r.actual));
+      return '<div class="test-row ' + cls + '"><span class="mark">' + mark + '</span>' +
+        '<span class="name">' + esc(r.nimi) + '</span><span class="detail">' + detail + '</span></div>';
+    }).join("");
+
+    summaryLine.hidden = false;
+    summaryLine.textContent = passCount + " / " + results.length + " testiä läpi.";
+
+    if (passCount === results.length) {
+      progress[LESSON.id].lapaisty = true;
+      LS.set("kk_progress", progress);
+      showBanner("success", "🎉 Kaikki testit vihreänä! Voit siirtyä yhteenvetoon.");
+    } else if (passCount > 0) {
+      showBanner("", "Hyvä alku — osa testeistä läpi. Katso mikä testi epäonnistuu ja kokeile uudestaan, tai ota vihje.");
+    } else {
+      showBanner("", "Ei vielä yhtään läpi. Ihan ok — ota vihje jos jumitat.");
+    }
+  }
+
+  // ---------- Osa 3: Yhteenveto + tiketti ----------
+  var formForm = document.getElementById("formForm");
+  var ticketArea = document.getElementById("ticketArea");
+  var ticketOut = document.getElementById("ticketOut");
+  var ticketName = document.getElementById("ticketName");
+  var copyMsg = document.getElementById("copyMsg");
+
+  formForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var f = {
+      nimi: (document.getElementById("nimi").value || "Oppija").trim(),
+      opittu: document.getElementById("opittu").value.trim(),
+      epaselva: document.getElementById("epaselva").value.trim(),
+      seuraava: document.getElementById("seuraava").value
+    };
+    stepDone.form = true; renderSteps();
+
+    var p = progress[LESSON.id];
+    var suggestedTaso, peruste;
+    if (p.lapaisty && p.vihjeet === 0) {
+      suggestedTaso = 3;
+      peruste = "kaikki testit läpi ilman vihjeitä — nosta tasoa";
+    } else if (p.lapaisty) {
+      suggestedTaso = 2;
+      peruste = "kaikki testit läpi vihjeiden avulla — jatka tasolla 2";
+    } else if (lastPassCount > 0) {
+      suggestedTaso = 2;
+      peruste = "osa testeistä läpi — kertausta samalla tasolla auttaa";
+    } else {
+      suggestedTaso = 1;
+      peruste = "ei testejä läpi vielä — kannattaa vahvistaa perusteet ennen taulukoita";
+    }
+
+    var slug = slugify(f.seuraava);
+    var fname = "tickets/003-oppitunti-03-" + slug + ".md";
+    ticketName.textContent = fname;
+    ticketOut.value = buildTicket(f, p, suggestedTaso, peruste);
+    ticketArea.hidden = false;
+    copyMsg.textContent = "";
+    ticketArea.scrollIntoView();
+
+    document.getElementById("downloadBtn").onclick = function () {
+      var blob = new Blob([ticketOut.value], { type: "text/markdown;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = fname.split("/").pop();
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    };
+    document.getElementById("copyBtn").onclick = function () {
+      var text = ticketOut.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { copyMsg.textContent = "Kopioitu. Liitä tiedostoon " + fname; },
+          fallbackCopy
+        );
+      } else { fallbackCopy(); }
+      function fallbackCopy() {
+        ticketOut.removeAttribute("readonly");
+        ticketOut.select();
+        try { document.execCommand("copy"); copyMsg.textContent = "Kopioitu."; }
+        catch (e) { copyMsg.textContent = "Kopiointi ei onnistunut — valitse teksti ja kopioi käsin."; }
+        ticketOut.setAttribute("readonly", "");
+      }
+    };
+  });
+
+  function buildTicket(f, p, taso, peruste) {
+    var today = new Date().toISOString().slice(0, 10);
+    var L = [];
+    L.push("# Tiketti 003 — Oppitunti 3: " + f.seuraava);
+    L.push("");
+    L.push("- luotu: " + today);
+    L.push("- epic: oppitunnit");
+    L.push("- status: todo");
+    L.push("- oppija: " + f.nimi);
+    L.push("- pohjautuu: oppitunti-02 (Taulukot ja Array.map)");
+    L.push("");
+    L.push("## Lähtötaso");
+    L.push("- Oppitunti 2: " + lastPassCount + "/" + LESSON.testit.length + " testiä läpi, " +
+      p.vihjeet + " vihjettä käytetty, " + p.yritykset + " ajokertaa");
+    L.push("- Arvioitu taso: " + taso + " (" + peruste + ")");
+    L.push("");
+    L.push("## Mitä oppija kertoi oppineensa");
+    L.push(f.opittu || "(tyhjä)");
+    L.push("");
+    L.push("## Mikä jäi epäselväksi");
+    L.push(f.epaselva || "(tyhjä)");
+    L.push("");
+    L.push("## Seuraava oppitunti");
+    L.push("- Aihe: " + f.seuraava);
+    L.push("- Taso: " + taso);
+    L.push("- Peruste: " + peruste);
+    L.push("");
+    L.push("## Acceptance criteria");
+    L.push("- [ ] Oppitunti generoitu schema `koodikoulu.oppitunti.v1` mukaan (aihe: " + f.seuraava + ", taso: " + taso + ")");
+    L.push("- [ ] Referenssiratkaisu läpäisee omat testinsä ENNEN kuin oppija näkee mitään");
+    L.push("- [ ] 3–6 testiä, vähintään yksi reunatapaus");
+    L.push("- [ ] Vihjeet paljastetaan yksi kerrallaan");
+    L.push("- [ ] Oppija saa vähintään yhden testin vihreäksi");
+    L.push("");
+    L.push("## Muistiinpanot generaattorille");
+    L.push("- Kieli yhtä yksinkertaista kuin edellisissä — rauhallinen tahti, teoria ennen tehtävää.");
+    L.push("- Käyttöliittymä suomeksi, muuttuja- ja funktionimet englanniksi.");
+    L.push("- Skenaario liitettävä peleihin (oppijan kiinnostus).");
+    return L.join("\n");
+  }
+
+  function slugify(s) {
+    return (s || "aihe").toLowerCase()
+      .replace(/[äå]/g, "a").replace(/ö/g, "o")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "aihe";
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+})();
+</script>
+</body>
+</html>
